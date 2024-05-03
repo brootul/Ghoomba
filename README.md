@@ -20,3 +20,6 @@ At specific intervals (currently every 100 simulated years) you will get a progr
 
 HOW TO CLONE AND RUN THIS PROGRAM 
 
+1. Install python: sudo apt install python3
+2. Clone the repository: git clone https://github.com/brootul/ghoomba.git
+3. Run the main file: python main.py
