@@ -1,10 +1,11 @@
 import random
 
 class Catastrophe:
-    def __init__(self, name, min_reduction, max_reduction):
+    def __init__(self, name, min_reduction, max_reduction, probability):
         self.name = name
         self.min_reduction = min_reduction
         self.max_reduction = max_reduction
+        self.probability = probability
 
     def execute_catastrophe(self, current_population):
         """Randomly reduces the population based on the defined min and max reduction percentages."""
@@ -25,18 +26,18 @@ class DivineIntervention:
 
 # List of predefined Catastrophes
 CATASTROPHES = [
-    Catastrophe("Minor Plague", 10, 50),
-    Catastrophe("Minor Famine", 10, 50),
-    Catastrophe("Minor Conventional War", 10, 50),
-    Catastrophe("Minor Biological War", 10, 50),
-    Catastrophe("Greater Plague", 30, 70),
-    Catastrophe("Greater Famine", 30, 70),
-    Catastrophe("Greater Conventional War", 30, 70),
-    Catastrophe("Greater Biological War", 30, 70),
-    Catastrophe("Alien Annihilation", 75, 100),
-    Catastrophe("Global Thermonuclear War", 75, 100),
-    Catastrophe("Zombie Apocalypse", 75, 100),
-    Catastrophe("Planet Killer Asteroid", 75, 100)
+    Catastrophe("Minor Plague", 10, 50, 12),
+    Catastrophe("Minor Famine", 10, 50, 11),
+    Catastrophe("Minor Conventional War", 10, 50, 10),
+    Catastrophe("Minor Biological War", 10, 50, 9),
+    Catastrophe("Greater Plague", 30, 70, 8),
+    Catastrophe("Greater Famine", 30, 70, 7),
+    Catastrophe("Greater Conventional War", 30, 70, 6),
+    Catastrophe("Greater Biological War", 30, 70, 5),
+    Catastrophe("Alien Annihilation", 75, 100, 1),
+    Catastrophe("Global Thermonuclear War", 75, 100, 1),
+    Catastrophe("Zombie Apocalypse", 75, 100, 1),
+    Catastrophe("Planet Killer Asteroid", 75, 100, 1)
 ]
 
 # List of predefined Divine Interventions

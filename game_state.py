@@ -57,16 +57,44 @@ class GameState:
 
 
     def maybe_trigger_random_catastrophe(self):
-        """Determine randomly if a catastrophe occurs with a 10% chance."""
-        if random.random() < 0.1:  # 10% chance
-            self.trigger_random_catastrophe()
+        """Determine randomly if a catastrophe occurs with a flat 1% chance, and then select which catastrophe based on their individual probabilities."""
+        if random.random() < 0.008:  # 1% chance for any catastrophe to happen
+            # Select which catastrophe occurs based on individual probabilities
+            probabilities = [catastrophe.probability for catastrophe in self.catastrophes]
+            selected_catastrophe = random.choices(self.catastrophes, weights=probabilities, k=1)[0]
+        
+            # Execute the selected catastrophe
+            original_population = self.population
+            self.population = selected_catastrophe.execute_catastrophe(self.population)
+        
+            # Calculate the percentage of population reduced
+            population_reduced = original_population - self.population
+            reduction_percentage = (population_reduced / original_population) * 100
+
+            # Print detailed report of the catastrophe
+            print(f"Catastrophe '{selected_catastrophe.name}' occurred in the year {self.year}, reducing population by {reduction_percentage:.2f}%.")
+            print(f"Total population after the event: {self.population}.")
+
+            return True
+        return False
+            
 
 
-    def trigger_random_catastrophe(self):
-        """Selects a random catastrophe and applies its effects."""
-        catastrophe = random.choice(self.catastrophes)
-        self.population = catastrophe.execute_catastrophe(self.population)
-        print(f"Catastrophe '{catastrophe.name}' occurred, reducing population.")
+    def trigger_random_catastrophe(self, catastrophe):
+        """Trigger a specific catastrophe and apply its effects, reporting the details of the impact."""
+        # Store the original population to calculate the impact later
+        original_population = self.population
+
+        # Execute the passed catastrophe
+        self.population = Catastrophe.execute_catastrophe(self.population)
+
+        # Calculate the percentage of population reduced
+        population_reduced = original_population - self.population
+        reduction_percentage = (population_reduced / original_population) * 100
+
+        # Print the detailed report of the catastrophe
+        print(f"Catastrophe '{Catastrophe.name}' occurred in the year {self.year}, reducing population by {reduction_percentage:.2f}%.")
+        print(f"Total population after the event: {self.population}.")
 
     
     def trigger_specific_catastrophe(self, catastrophe_name):

@@ -14,43 +14,39 @@ class GameController:
         self.collect_initial_values()
         self.confirm_initial_values()
 
-        game_over = False
+        while self.game_state.year < 10000:
+            self.simulate_growth()  # Simulate growth silently
 
-        while self.game_state.year < 10000 and not game_over:
-            self.simulate_growth()  # Simulate growth and update the game state
-            self.game_view.display_stats(
-                self.game_state.year, 
-                self.game_state.population, 
-                self.game_state.determine_growth_factor(),
-                self.game_state.ghoomba_aggressiveness,
-                self.game_state.environment_hostility,
-                self.game_state.lifespan
-            )
-
-            if self.game_state.population <= 10 or self.game_state.population >= 999e12:
-                game_over = True
-                continue
-
-            # Check for and potentially handle a random catastrophe
-            if self.game_state.maybe_trigger_random_catastrophe():
-                self.game_state.trigger_random_catastrophe()
+            # Output every 100 years unless it's a game-ending year
+            if self.game_state.year % 100 == 0 or \
+            self.game_state.population <= 10 or \
+            self.game_state.population >= 999e12:
                 self.game_view.display_stats(
-                    self.game_state.year, 
-                    self.game_state.population, 
+                    self.game_state.year,
+                    self.game_state.population,
                     self.game_state.determine_growth_factor(),
                     self.game_state.ghoomba_aggressiveness,
                     self.game_state.environment_hostility,
                     self.game_state.lifespan
                 )
 
-            # Prompt for adjustments and confirm if needed
-            if self.prompt_for_adjustments() and not self.confirm_adjustments():
-                continue  # Skip to next iteration if adjustments are not confirmed
+                # Break out of the loop if game-ending conditions are met
+                if self.game_state.population <= 10 or self.game_state.population >= 999e12:
+                    break
 
-            # Handle events based on user interaction
-            self.handle_event_trigger()
+            # Check for and handle a random catastrophe
+            self.game_state.maybe_trigger_random_catastrophe()
+                
+
+            # Handle user interactions for adjustments and events every 100 years
+            if self.game_state.year % 100 == 0:
+                if self.prompt_for_adjustments() and not self.confirm_adjustments():
+                    continue  # Skip to next iteration if adjustments are not confirmed
+                self.handle_event_trigger()
 
         self.display_game_over_message()
+
+
 
 
     def handle_event_trigger(self):
@@ -84,10 +80,15 @@ class GameController:
                                               self.game_state.luck)
 
     def simulate_growth(self, years=100):
-        """Simulate growth over a given number of years, silently updating the game state."""
-        for _ in range(years):
-            self.game_state.advance_year()  # Update the year and population based on growth rates
-
+        """Simulate growth for the current year, updating the game state."""
+        self.game_state.advance_year()  # Advances the year based on growth factors
+        # Check for end-of-game conditions based on population or year
+        if self.game_state.year >= 10000 or \
+        self.game_state.population <= 10 or \
+        self.game_state.population >= 999e12:
+            return False  # Stop the simulation
+        return True  # Continue the simulation
+    
 
     def prompt_for_adjustments(self):
         # Ask the user if they want to make adjustments
@@ -203,13 +204,16 @@ class GameController:
 
 
     def display_game_over_message(self):
-        """Displays the appropriate game over message based on the end conditions."""
+        """Display the game over message with the exact year the game ended."""
         if self.game_state.population <= 10:
-            self.game_view.display_message("Your population has gone extinct.")
+            message = f"Game over: Your population has gone extinct in the year {self.game_state.year}!"
         elif self.game_state.population >= 999e12:
-            self.game_view.display_message("Congratulations! Your population has thrived and reached a tremendous size.")
+            message = f"Game over: Due to overpopulation, your population has gone extinct in the year {self.game_state.year}!"
         else:
-            self.game_view.display_message("You've reached the year 10000. Let's see how you did!")
+            message = f"Game over: You've reached the year {self.game_state.year}. Let's see how you did!"
+
+        self.game_view.display_message(message)
+
 
     def exit_game(self):
         """Handle game exit."""
